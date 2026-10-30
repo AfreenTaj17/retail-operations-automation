@@ -10,8 +10,6 @@ Retail teams regularly handle stock requests that require review and approval fr
 
 This project demonstrates a digital workflow for managing stock requests, with separate employee and manager permissions, authenticated API access, and audit logging.
 
-**Note:** This is an independent portfolio prototype inspired by retail operations workflows. It is not an official Tesco application or a production retail system.
-
 ## Key Features
 
 - **User authentication:** Employee and manager login using JWT access tokens.
@@ -232,7 +230,3 @@ MCA – Data Science | Python | SQL | Machine Learning | Backend Development
 
 - GitHub: [AfreenTaj17](https://github.com/AfreenTaj17)
 - LinkedIn: [Afreen Taj](https://www.linkedin.com/in/afreentaj17/)
-
----
-
-*Built as an independent portfolio project to demonstrate backend development, API design, authentication, database integration, workflow automation, testing, and CI/CD fundamentals.*
