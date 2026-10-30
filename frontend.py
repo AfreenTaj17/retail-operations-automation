@@ -14,10 +14,16 @@ logging.basicConfig(
 
 logger = logging.getLogger("retail_operations")
 
-API_URL = os.getenv(
-    "API_URL",
-    "http://127.0.0.1:8000"
-).rstrip("/")
+try:
+    API_URL = st.secrets.get(
+        "API_URL",
+        os.getenv("API_URL", "http://127.0.0.1:8000")
+    ).rstrip("/")
+except Exception:
+    API_URL = os.getenv(
+        "API_URL",
+        "http://127.0.0.1:8000"
+    ).rstrip("/")
 
 st.set_page_config(
     page_title="Retail Operations Dashboard",
