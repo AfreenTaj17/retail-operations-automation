@@ -37,7 +37,81 @@ def initialize_database():
                 FOREIGN KEY (request_id)
                     REFERENCES stock_requests(request_id)
             );
+
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL
+                    CHECK (role IN ('employee', 'manager')),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         """)
+    finally:
+        connection.close()
+
+def create_user(username, password_hash, role):
+    """Create a new employee or manager account."""
+
+    if role not in ("employee", "manager"):
+        raise ValueError("Invalid role")
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(
+            """
+            INSERT INTO users (username, password_hash, role)
+            VALUES (?, ?, ?)
+            """,
+            (username, password_hash, role)
+        )
+
+        connection.commit()
+        return cursor.lastrowid
+
+    finally:
+        connection.close()
+
+
+def get_user_by_username(username):
+    """Retrieve a user by username."""
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(
+            """
+            SELECT id, username, password_hash, role
+            FROM users
+            WHERE username = ?
+            """,
+            (username,)
+        )
+
+        return cursor.fetchone()
+
+    finally:
+        connection.close()
+
+
+def get_user_by_id(user_id):
+    """Retrieve a user by ID."""
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute(
+            """
+            SELECT id, username, password_hash, role
+            FROM users
+            WHERE id = ?
+            """,
+            (user_id,)
+        )
+
+        return cursor.fetchone()
+
     finally:
         connection.close()
 

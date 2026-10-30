@@ -4,3 +4,5 @@ pytest
 httpx
 streamlit
 requests
+pwdlib[argon2]
+PyJWT
