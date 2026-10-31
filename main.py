@@ -1,14 +1,11 @@
 from contextlib import asynccontextmanager
 import sqlite3
-import os
-import hmac
 
 from fastapi import (
     FastAPI,
     HTTPException,
     Depends,
     status,
-    Header,
 )
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
@@ -185,61 +182,6 @@ def register_user(user_input: RegisterInput):
         "user_id": user_id,
         "username": username,
         "role": "employee",
-    }
-    
-
-# ==========================================
-# MANAGER REGISTRATION
-# ==========================================
-
-@app.post("/setup-manager", status_code=status.HTTP_201_CREATED)
-def setup_manager(
-    manager_input: ManagerSetupInput,
-    setup_key: str | None = Header(default=None, alias="X-Setup-Key"),
-):
-    expected_key = os.getenv("MANAGER_SETUP_KEY")
-
-    if not expected_key:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Manager setup is disabled",
-        )
-
-    if not setup_key or not hmac.compare_digest(setup_key, expected_key):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid setup key",
-        )
-
-    username = manager_input.username.strip().lower()
-
-    if len(username) < 3:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Username must contain at least 3 non-whitespace characters",
-        )
-
-    if get_user_by_username(username):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Username already exists",
-        )
-
-    password_digest = hash_password(manager_input.password)
-
-    try:
-        user_id = create_user(username, password_digest, "manager")
-    except sqlite3.IntegrityError:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Username already exists",
-        )
-
-    return {
-        "message": "Manager account created successfully",
-        "user_id": user_id,
-        "username": username,
-        "role": "manager",
     }
 
 # ==========================================
